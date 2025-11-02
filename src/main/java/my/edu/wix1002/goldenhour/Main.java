@@ -4,38 +4,233 @@ import my.edu.wix1002.goldenhour.model.Employee;
 import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
 import my.edu.wix1002.goldenhour.util.DataLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.io.IOException;
 import java.util.List;
 import com.opencsv.exceptions.CsvValidationException;
+import java.util.Scanner;
 
 // import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws CsvValidationException{
-        System.out.println("--- Starting Store Operations System ---");
+        System.out.println("== Store Operation Management System ==");
+        System.out.println("== Employee Login ==");
 
         // Load all initial data from CSV files (Data Load State)
         List<Employee> allEmployees = DataLoader.loadEmployees();
         List<Outlet> allOutlets = DataLoader.loadOutlets();
         List<Model> allModels = DataLoader.loadModels();
 
-        if (!allEmployees.isEmpty()) {
-            System.out.println("First employee loaded: " + allEmployees.get(0));
-        } else {
-            System.out.println("No employees loaded.");
-        }
+        // System.out.println("Number of employees loaded: " + allEmployees.size());
+        // for (Employee emp : allEmployees) {
+        //     System.out.println("Loaded: " + emp.getEmployeeID() + " - " + emp.getPassword());
+        // }
 
-        if (!allOutlets.isEmpty()) {
-            System.out.println("First outlet loaded: " + allOutlets.get(0));
-        } else {
-            System.out.println("No outlets loaded. Check CSV file path/content.");
-        }
+        // if (!allEmployees.isEmpty()) {
+        //     System.out.println("First employee loaded: " + allEmployees.get(0));
+        // } else {
+        //     System.out.println("No employees loaded.");
+        // }
 
-        if (!allModels.isEmpty()) {
-            System.out.println("First model loaded: " + allModels.get(0));
-        } else {
-            System.out.println("No models loaded. Check CSV file path/content.");
-        }
+        // if (!allOutlets.isEmpty()) {
+        //     System.out.println("First outlet loaded: " + allOutlets.get(0));
+        // } else {
+        //     System.out.println("No outlets loaded. Check CSV file path/content.");
+        // }
+
+        // if (!allModels.isEmpty()) {
+        //     System.out.println("First model loaded: " + allModels.get(0));
+        // } else {
+        //     System.out.println("No models loaded. Check CSV file path/content.");
+        // }
         
         // The main menu/login loop will start here 
+        Scanner input = new Scanner(System.in);
+        boolean isLoggedIn = false;
+        boolean running = true;
+        Employee loggedInEmployee = null;
+        
+
+        while (!isLoggedIn) {
+                System.out.print("Enter Employee ID (or 'exit' to quit): ");
+                String employeeID = input.nextLine();
+                
+                if (employeeID.equalsIgnoreCase("exit")) {
+                    running = false;
+                    break;
+                }
+
+                System.out.print("Enter Password: ");
+                String password = input.nextLine();
+
+                // Find employee with matching ID and password
+                for (Employee employee : allEmployees) {
+                    if (employee.getEmployeeID().equals(employeeID) && 
+                        employee.getPassword().equals(password)) {
+                        isLoggedIn = true;
+                        loggedInEmployee = employee;
+                        break;
+                    }
+                }
+
+                if (isLoggedIn) {
+                    String outletCode = loggedInEmployee.getEmployeeID().substring(0, 3);
+                    System.out.println("\nLogin Successful!");
+                    System.out.println("Welcome, " + loggedInEmployee.getName() + " (" + outletCode + ")");
+
+                    if (loggedInEmployee.getRole().equals("Manager")) {
+                        showManagerMenu(input, allEmployees, outletCode);
+                    } else {
+                        showEmployeeMenu(input, loggedInEmployee);
+                    }
+                } else {
+                    System.out.println("\nLogin Failed: Invalid User ID or Password. ");
+                }
+        }
+
+        System.out.println("Thank you for using the Store Operation Management System!");
+        input.close();
+    }
+
+    private static void showManagerMenu(Scanner input, List<Employee> allEmployees, String outletCode) {
+        System.out.println("\n=== Manager Menu ===");
+        System.out.println("1. Register New Employee");
+        System.out.println("2. Exit");
+        System.out.print("Enter choice: ");
+        
+        String choice = input.nextLine();
+        if (choice.equals("1")) {
+            registerNewEmployee(input, allEmployees, outletCode);
+        }
+    }
+
+    private static void registerNewEmployee(Scanner input, List<Employee> allEmployees, String outletCode) {
+        System.out.println("\n=== Register New Employee ===");
+        
+        // Get employee details
+        System.out.print("Enter Employee Name: ");
+        String name = input.nextLine();
+        
+        // Get and validate employee ID
+        String validEmployeeId = null;
+        while (true) {
+            System.out.print("Enter Employee ID: ");
+            String tempId = input.nextLine(); 
+            
+            // Check if ID already exists
+            final String idToCheck = tempId;
+            boolean isDuplicate = allEmployees.stream()
+                .anyMatch(emp -> emp.getEmployeeID().equals(idToCheck));
+            
+            if (isDuplicate) {
+                System.out.println("Error: Employee ID already exists!");
+                continue;
+            }
+            
+            // Validate ID format (should start with outlet code)
+            if (!tempId.startsWith(outletCode)) {
+                System.out.println("Error: Employee ID must start with " + outletCode);
+                continue;
+            }
+            validEmployeeId = tempId;
+            break;
+        }
+
+        System.out.print("Set Password: ");
+        String password = input.nextLine();
+        
+        // Get and validate role
+        String role;
+        while (true) {
+            System.out.print("Set Role (Part-time/Full-time): ");
+            role = input.nextLine();
+            if (role.equals("Part-time") || role.equals("Full-time")) {
+                break;
+            }
+            System.out.println("Error: Invalid role! Please enter 'Part-time' or 'Full-time'");
+        }
+
+        // Create new employee and save to CSV
+        try {
+            String newEntry = String.format("%s,%s,%s,%s%n", 
+                validEmployeeId, name, role, password);
+
+            // List<String> allLines = Files.readAllLines(Paths.get(DataLoader.EMPLOYEE_FILE_PATH));
+            // allLines.removeIf(line -> line.startsWith("null,"));
+            // allLines.add(newEntry);
+            Files.write(Paths.get(DataLoader.EMPLOYEE_FILE_PATH), 
+                       newEntry.getBytes(), 
+                       StandardOpenOption.APPEND);
+            
+            // Add to current list
+            Employee newEmployee = new Employee(validEmployeeId, name, role, password, outletCode);
+            allEmployees.add(newEmployee);
+            
+            System.out.println("\nEmployee successfully registered!");
+            
+        } catch (IOException e) {
+            System.err.println("Error saving employee data: " + e.getMessage());
+        }
+    }
+    private static void showEmployeeMenu(Scanner input, Employee loggedInEmployee) {
+        boolean running = true;
+        while (running) {
+            System.out.println("\n=== Employee Menu ===");
+            System.out.println("1. Log Attendance");
+            System.out.println("2. Morning Stock Count");
+            System.out.println("3. Stock In");
+            System.out.println("4. Stock Out");
+            System.out.println("5. Record New Sale");
+            System.out.println("6. Search Stock Information");
+            System.out.println("7. Edit Stock Information");
+            System.out.println("8. Edit Sales Information");
+            System.out.println("9. Exit");
+            System.out.print("Enter choice: ");
+
+            String choice = input.nextLine();
+            switch (choice) {
+                case "1":
+                    System.out.println("Log Attendance - Coming soon!");
+                    running = false;
+                    break;
+                case "2":
+                    System.out.println("Morning Stock Count - Coming soon!");
+                    running = false;
+                    break;
+                case "3":
+                    System.out.println("Stock In - Coming soon!");
+                    running = false;
+                    break;
+                case "4":
+                    System.out.println("Stock Out - Coming soon!");
+                    running = false;
+                    break;
+                case "5":
+                    System.out.println("Record New Sale - Coming soon!");
+                    running = false;
+                    break;
+                case "6":
+                    System.out.println("Search Stock Information - Coming soon!");
+                    running = false;
+                    break;
+                case "7":
+                    System.out.println("Edit Stock Information - Coming soon!");
+                    running = false;
+                    break;
+                case "8":
+                    System.out.println("Edit Sales Information - Coming soon!");
+                    running = false;
+                    break;
+                case "9":
+                    running = false;
+                    System.out.println("Logging out...");
+                    break;
+                default:
+                    System.out.println("Invalid choice! Please try again.");
+            }
+        }
     }
 }

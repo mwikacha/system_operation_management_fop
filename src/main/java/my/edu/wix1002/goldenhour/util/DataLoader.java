@@ -14,7 +14,7 @@ import java.util.List;
 
 public class DataLoader {
 
-    private static final String EMPLOYEE_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/employee.csv"; 
+    public static final String EMPLOYEE_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/employee.csv"; 
     private static final String OUTLET_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/outlet.csv";
     private static final String MODEL_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/model.csv";
 
@@ -24,7 +24,7 @@ public class DataLoader {
         try (CSVReader reader = new CSVReader(new FileReader(EMPLOYEE_FILE_PATH))) {
 
             // 1. Skip the header line
-            reader.readNext(); // Skip the header row (e.g., ID, Name, Role, Password, OutletCode)
+            reader.readNext(); 
 
             // 2. Read all remaining lines
             String[] nextRecord;
@@ -38,12 +38,12 @@ public class DataLoader {
                         nextRecord[1],  // EmployeeName
                         nextRecord[2],  // Role
                         nextRecord[3],  // Password
-                        "C60"          // Default outlet code
+                        nextRecord[0].substring(0, 3)          // Default outlet code
                     );
                     employeeList.add(employee);
                 }
             }
-            System.out.println("Successfully loaded " + employeeList.size() + " employees.");
+            // System.out.println("Successfully loaded " + employeeList.size() + " employees.");
 
         } catch (IOException e) {
             // Handle file not found or reading errors (Error Handling)
@@ -59,7 +59,7 @@ public class DataLoader {
         List<Outlet> outletList = new ArrayList<>();
         try (CSVReader reader = new CSVReader(new FileReader(OUTLET_FILE_PATH))) {
             // Skip header
-            reader.readNext(); // This line may throw CsvValidationException
+            reader.readNext(); 
             
             String[] nextRecord;
             while ((nextRecord = reader.readNext()) != null) {
@@ -71,7 +71,7 @@ public class DataLoader {
                     outletList.add(outlet);
                 }
             }
-            System.out.println("Successfully loaded " + outletList.size() + " outlets.");
+            // System.out.println("Successfully loaded " + outletList.size() + " outlets.");
         } catch (IOException e) {
             System.err.println("Error loading outlet data: " + e.getMessage());
         }
@@ -98,7 +98,7 @@ public class DataLoader {
                 }
                 modelList.add(model);
             }
-            System.out.println("Successfully loaded " + modelList.size() + " models.");
+            // System.out.println("Successfully loaded " + modelList.size() + " models.");
         } catch (IOException | CsvValidationException e) {
             System.err.println("Error loading model data: " + e.getMessage());
         }
