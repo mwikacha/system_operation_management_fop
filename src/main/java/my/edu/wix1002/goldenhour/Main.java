@@ -104,8 +104,12 @@ public class Main {
         String choice = input.nextLine();
         if (choice.equals("1")) {
             registerNewEmployee(input, allEmployees, outletCode);
+        } else if (choice.equals("2")) {
+            System.out.println("Exiting Manager Menu...");
+        } else {
+            System.out.println("Invalid choice! Please try again.");
         }
-    }
+    } //add loop here if need to key in multiple employees
 
     private static void registerNewEmployee(Scanner input, List<Employee> allEmployees, String outletCode) {
         System.out.println("\n=== Register New Employee ===");
@@ -145,13 +149,17 @@ public class Main {
         // Get and validate role
         String role;
         while (true) {
-            System.out.print("Set Role (Part-time/Full-time): ");
-            role = input.nextLine();
-            if (role.equals("Part-time") || role.equals("Full-time")) {
+            System.out.print("Set Role (P=Part-time/F=Full-time): ");
+            role = input.nextLine().trim().toUpperCase();
+            if (role.equalsIgnoreCase("P") || role.equalsIgnoreCase("Part-time")) {
+                role = "Part-time";
+                break;
+            } else if (role.equalsIgnoreCase("F") || role.equalsIgnoreCase("Full-time")) {
+                role = "Full-time";
                 break;
             }
             System.out.println("Error: Invalid role! Please enter 'Part-time' or 'Full-time'");
-        }
+        } //adding more flexible input
 
         // Create new employee and save to CSV
         try {
@@ -175,7 +183,7 @@ public class Main {
             System.err.println("Error saving employee data: " + e.getMessage());
         }
     }
-    private static void showEmployeeMenu(Scanner input, Employee loggedInEmployee) {
+    private static void showEmployeeMenu(Scanner input, Employee loggedInEmployee, List<Model> allModels) {
         boolean running = true;
         while (running) {
             System.out.println("\n=== Employee Menu ===");
@@ -209,8 +217,8 @@ public class Main {
                     running = false;
                     break;
                 case "5":
-                    System.out.println("Record New Sale - Coming soon!");
-                    running = false;
+                    salesSystem.recordNewSale(input, loggedInEmployee, allModels);
+                    break
                     break;
                 case "6":
                     System.out.println("Search Stock Information - Coming soon!");
