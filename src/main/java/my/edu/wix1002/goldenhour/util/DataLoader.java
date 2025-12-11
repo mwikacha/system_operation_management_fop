@@ -16,7 +16,7 @@ public class DataLoader {
 
     public static final String EMPLOYEE_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/employee.csv"; 
     private static final String OUTLET_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/outlet.csv";
-    private static final String MODEL_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/model.csv";
+    public static final String MODEL_FILE_PATH = "C:/Users/mwikacha/Desktop/fop-assignment1/goldenhour-system/data/model.csv";
 
     public static List<Employee> loadEmployees() {
         List<Employee> employeeList = new ArrayList<>();
