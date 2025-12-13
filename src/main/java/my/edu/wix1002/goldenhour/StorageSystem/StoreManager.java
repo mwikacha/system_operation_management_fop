@@ -148,7 +148,28 @@ public class StoreManager {
         }
     }
 
-    //2. Save stock-in transaction
+    //2. Save night stock count
+    public static void appendNightStock(String[] record) {
+        String filePath = "data/night_stock.csv";
+
+        try (CSVWriter writer = new CSVWriter(
+            new FileWriter(filePath, true))) {
+
+            //header
+            if (Files.size (Paths.get(filePath)) == 0) {
+                writer.writeNext(new String[]{
+                    "EmployeeID" , "OutletCode", "Date", "ModelID", "CountedQty"
+                });
+            }
+
+            writer.writeNext(record);
+
+        } catch (IOException e) {
+            System.err.println("Error saving night stock count: " + e.getMessage());
+        }
+    }
+
+    //3. Save stock-in transaction
     public static void appendStockIn(String[] record) {
         String filePath = "data/stock_in.csv";
 
@@ -157,7 +178,7 @@ public class StoreManager {
 
             if (Files.size(Paths.get(filePath)) == 0) {
                 writer.writeNext(new String[]{
-                    "EmployeeID", "OutledCode", "Date", "ModelID", "QuantityIn"
+                    "EmployeeID", "OutletCode", "Date", "ModelID", "QuantityIn"
                 });
             }
 
@@ -168,7 +189,7 @@ public class StoreManager {
         }  
     }
 
-    //3. Save stock-out transaction
+    //4. Save stock-out transaction
     public static void appendStockOut(String[] record) {
         String filePath = "data/stock_out.csv";
 
