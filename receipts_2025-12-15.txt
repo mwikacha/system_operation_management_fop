@@ -1,0 +1,24 @@
+
+=== Stock In ===
+Date: 2025-12-15
+Time: 12:49 p.m.
+Employee in Charge: Adam bin Abu
+null
+To: C60 (Kuala Lumpur City Centre)
+Models received:
+- DW2400-2 (Quantity: 2)
+Total Quantity: 2
+Model quantities updated successfully.
+
+
+=== Stock Out ===
+Date: 2025-12-15
+Time: 12:49 p.m.
+Employee in Charge: Adam bin Abu
+From: HQ (Service Center)
+To: C61 (MidValley)
+Models transferred out:
+- DW2400-2 (Quantity: 2)
+Total Quantity: 2
+Model quantities updated successfully.
+

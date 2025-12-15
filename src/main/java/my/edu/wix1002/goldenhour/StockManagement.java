@@ -1,3 +1,4 @@
+package my.edu.wix1002.goldenhour;
 /*
 This module enables employees to manage and update stock-related 
 information in the store. 
@@ -139,7 +140,7 @@ public class StockManagement {
 
             try 
             {
-                BufferedReader inputStream = new BufferedReader (new FileReader("model.csv"));
+                BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
                 String line = inputStream.readLine();
                 String[] title = line.split(",");
                 totalLines = title.length -2;
@@ -165,7 +166,7 @@ public class StockManagement {
             String [] recordedOutlet = new String [countModelOutlets()];
             try 
             {
-                BufferedReader inputStream = new BufferedReader (new FileReader("model.csv"));
+                BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
                 String line = inputStream.readLine();
                 String[] title = line.split(",");
                 for (int i = 2; i < title.length; i++)
@@ -191,7 +192,7 @@ public class StockManagement {
 
             try 
             {
-                BufferedReader inputStream = new BufferedReader (new FileReader("model.csv"));
+                BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
                 String line;
                 boolean firstLine = true;
 
@@ -228,7 +229,7 @@ public class StockManagement {
     private static void modelsRead(Model[] models){
         try 
         {
-            BufferedReader inputStream = new BufferedReader (new FileReader("model.csv"));
+            BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
             String line;
             boolean firstLine = true;
             int index = 0;
@@ -318,7 +319,7 @@ public class StockManagement {
 
             try 
             {
-                BufferedReader inputStream = new BufferedReader (new FileReader("outlet.csv"));
+                BufferedReader inputStream = new BufferedReader (new FileReader("data/outlet.csv"));
                 String line;
                 boolean firstLine = true;
 
@@ -336,7 +337,7 @@ public class StockManagement {
             }
             catch (FileNotFoundException e) 
             {
-            System.out.println("The file \"model.csv\" was not found");   
+            System.out.println("The file \"outlet.csv\" was not found");   
             } 
             catch (IOException e) 
             {
@@ -355,7 +356,7 @@ public class StockManagement {
     private static void outletsRead(Outlet[]outlets){
         try 
         {
-            BufferedReader inputStream = new BufferedReader (new FileReader("outlet.csv"));
+            BufferedReader inputStream = new BufferedReader (new FileReader("data/outlet.csv"));
             String line;
             boolean firstLine = true;
             int index = 0;
@@ -379,7 +380,7 @@ public class StockManagement {
         inputStream.close();
         } 
         catch (FileNotFoundException e) {
-        System.out.println("The file \"model.csv\" was not found");  
+        System.out.println("The file \"outlet.csv\" was not found");  
         } 
         catch (IOException e) {
         System.out.println("Error reading from file");

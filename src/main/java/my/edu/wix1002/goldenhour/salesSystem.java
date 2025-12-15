@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import javax.print.attribute.SetOfIntegerSyntax;
+
 /**
  * SalesSystem - handles interactive sale recording, stock update and receipt generation.
  *
@@ -36,6 +38,8 @@ public class salesSystem {
     // Change this path if DataLoader.MODEL_FILE_PATH becomes public or you want a relative path.
     private static final String MODEL_CSV_PATH = DataLoader.MODEL_FILE_PATH;
     private static final Path SALES_DIR = Paths.get("data", "sales");
+    private static final Path SALES_CSV = Paths.get("data", "sales.csv");
+
     /*ofPattern(): create DateTimeFormatter instance by specifying a custom date and/or time pattern.
      * converting a string to a date/time object and vice versa.　
     */
@@ -67,9 +71,9 @@ public class salesSystem {
         System.out.println("\n=== Record New Sale ===");
         System.out.println("Date: " + now.toLocalDate().format(DATE_FMT));
         System.out.println("Time: " + now.format(TIME_PRINT_FMT));
-        System.out.print("Customer Name: ");
-        System.out.println("Item(s) Purchased: ");
+        System.out.println("Customer Name: ");
         String customerName = scanner.nextLine().trim();
+        System.out.println("Item(s) Purchased: ");
 
         List<SaleItem> items = new ArrayList<>();
 
@@ -149,10 +153,38 @@ public class salesSystem {
             m.getStockByOutlet().put(outletCode, curr - it.quantity);
         }
 
-        // Persist model.csv with updated quantities for this outlet
+        // Append receipt (transaction id to help tracing)
+        String txId = now.format(TX_ID_FMT) + "-" + (new Random().nextInt(900) + 100);
+        Sale sale = new Sale(txId, now, loggedInEmployee, customerName, items, paymentMethod, subtotal);
+
+        try {
+            appendSaleToCsv(sale);
+            //to catch error : A file doesn't exist or is inaccessible/Permission issues/loss o trnasfer
+        } catch (IOException e) {
+            System.err.println("Failed to generate receipt: " + e.getMessage());
+            //undo in-memory changes
+            for (Map.Entry<String, Integer> e2 : backups.entrySet()) {
+                Model m = modelMap.get(e2.getKey());
+                if ( m != null) {
+                    m.getStockByOutlet().put(outletCode, e2.getValue());
+                }
+            }
+            System.out.println("Transaction aborted.");
+            // Note: model.csv already updated; for strict atomicity you'd implement compensating actions or journaling.
+            return;
+        }
+
+        /*Persist model.csv with updated quantities for this outlet. If 
+        this fails, try to remove the previously appended CSV rows and rollback quantities
+         */ 
         boolean persisted = persistModelCsv(allModels, outletCode);
         if (!persisted) {
             System.out.println("Failed to persist stock changes. Transaction aborted.");
+            try {
+                removeSaleFromCsv(sale.transactionId);
+            } catch (IOException ex) {
+                System.err.println("Failed to remove appended sale from sales.csv automatically. Manual cleanup may be required." + ex.getMessage());
+            }
             // Undo in-memory changes
             for (Map.Entry<String, Integer> e : backups.entrySet()) {
                 Model m = modelMap.get(e.getKey());
@@ -160,19 +192,16 @@ public class salesSystem {
                     m.getStockByOutlet().put(outletCode, e.getValue());
                 }
             }
+            System.out.println("Transaction aborted. ");
             return;
         }
 
-        // Append receipt (transaction id to help tracing)
-        String txId = now.format(TX_ID_FMT) + "-" + (new Random().nextInt(900) + 100);
-        Sale sale = new Sale(txId, now, loggedInEmployee, customerName, items, paymentMethod, subtotal);
+        //3) Write human-readable receipt file (still useful even if CSV succeeded).
         try {
             appendReceipt(sale);
-            //to catch error : A file doesn't exist or is inaccessible/Permission issues/loss o trnasfer
         } catch (IOException e) {
-            System.err.println("Failed to generate receipt: " + e.getMessage());
-            // Note: model.csv already updated; for strict atomicity you'd implement compensating actions or journaling.
-            return;
+            System.err.println("Failed to generate receipt file: " + e.getMessage());
+            // The sale and model.csv are already updated; report to user.
         }
 
         System.out.println("Transaction successful.");
@@ -303,7 +332,7 @@ public class salesSystem {
         sb.append("Date: ").append(date.format(DATE_FMT)).append(System.lineSeparator());
         sb.append("Time: ").append(sale.timestamp.format(TIME_PRINT_FMT)).append(System.lineSeparator());
         sb.append("Employee: ").append(sale.employee.getEmployeeID())
-          .append(" - ").append(sale.employee.getName()).append(System.lineSeparator());
+        .append(" - ").append(sale.employee.getName()).append(System.lineSeparator());
         sb.append("Customer Name: ").append(sale.customerName).append(System.lineSeparator());
         sb.append("Item(s) Purchased:").append(System.lineSeparator());
         for (SaleItem it : sale.items) {
@@ -323,6 +352,96 @@ public class salesSystem {
     }
 
     // Helper classes
+    private static void appendSaleToCsv(Sale sale) throws IOException {
+        Path parent = SALES_CSV.getParent();
+        if (parent != null && !Files.exists(parent)) {
+            Files.createDirectories(parent);
+        }
+
+        boolean needHeader = !Files.exists(SALES_CSV ) || Files.size(SALES_CSV) == 0;
+
+        //Detect if the existing file ends with a newline
+        boolean fileEndWithNewLine = true;
+        if (Files.exists(SALES_CSV) && Files.size(SALES_CSV) > 0) {
+            try (java.io.RandomAccessFile ref = new java.io.RandomAccessFile(SALES_CSV.toFile(), "r")) {
+                ref.seek(ref.length() - 1);
+                int last = ref.read();//read the last byte
+                fileEndWithNewLine = (last == '\n' || last == '\r');
+            }
+        } 
+
+        try (BufferedWriter writer = Files.newBufferedWriter(SALES_CSV, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            if (needHeader) {
+                writer.write("SaleID,EmployeeID,OutletCode,CustomerName,Model,Quantity,UnitPrice,Subtotal,PaymentMethod,Date,Time");
+                writer.newLine();
+            } else {
+                if (!fileEndWithNewLine) {
+                    writer.newLine();
+                }
+            }
+
+            String date = sale.timestamp.toLocalDate().format(DATE_FMT);
+            String time = sale.timestamp.format(TIME_PRINT_FMT);
+
+            for (SaleItem item : sale.items) {
+                BigDecimal lineSubtotal = item.unitPrice.multiply(BigDecimal.valueOf(item.quantity));
+                String[] cols = new String[] {
+                        escapeCsv(sale.transactionId),
+                        escapeCsv(sale.employee.getEmployeeID()),
+                        escapeCsv(sale.employee.getOutletCode()),
+                        escapeCsv(sale.customerName),
+                        escapeCsv(item.modelId),
+                        String.valueOf(item.quantity),
+                        formatCurrency(item.unitPrice),
+                        formatCurrency(lineSubtotal),
+                        escapeCsv(sale.transactionMethod),
+                        date,
+                        time
+            };
+            writer.write(String.join(",", cols));
+            writer.newLine();
+        } 
+        writer.flush();
+    }
+}
+
+    private static void removeSaleFromCsv(String saleId) throws IOException {
+        if (!Files.exists(SALES_CSV)) return;
+        List<String> lines = Files.readAllLines(SALES_CSV, StandardCharsets.UTF_8);
+        if (lines.isEmpty()) return;
+
+        List<String> out = new ArrayList<>();
+
+        //keep header
+        out.add(lines.get(0));
+
+        for (int i = 1; i < lines.size(); i++) {
+            String line = lines.get(i);
+            if (line == null || line.trim().isEmpty()) {
+                out.add(line);
+                continue;
+            }
+
+            String trimmed = line.trim();
+            if (trimmed.startsWith(saleId + ",") || trimmed.startsWith("\"" + saleId + "\",") ) {
+                // skip this line (remove)
+                continue;
+            }
+            out.add(line);
+    }
+
+    // overwrite file with filtered content
+        Files.write(SALES_CSV, out, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    // Simple CSV escape for fields that may contain commas or quotes.
+    private static String escapeCsv(String field) {
+        if (field == null) return "";
+        boolean needQuotes = field.contains(",") || field.contains("\"") || field.contains("\n") || field.contains("\r");
+        String escaped = field.replace("\"", "\"\"");
+        return needQuotes ? "\"" + escaped + "\"" : escaped;
+    }
 
     private static class SaleItem {
         String modelId;
