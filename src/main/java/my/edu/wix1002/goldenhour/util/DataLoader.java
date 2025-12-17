@@ -3,6 +3,7 @@ package my.edu.wix1002.goldenhour.util;
 import my.edu.wix1002.goldenhour.model.Employee;
 import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
+import my.edu.wix1002.goldenhour.model.Sales;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -18,6 +19,7 @@ public class DataLoader {
     public static final String EMPLOYEE_FILE_PATH = "data/employee.csv"; 
     private static final String OUTLET_FILE_PATH = "data/outlet.csv";
     public static final String MODEL_FILE_PATH = "data/model.csv";
+    private static final String SALES_FILE_PATH = "data/sales.csv";
 
     public static List<Employee> loadEmployees() {
         List<Employee> employeeList = new ArrayList<>();
@@ -104,5 +106,37 @@ public class DataLoader {
             System.err.println("Error loading model data: " + e.getMessage());
         }
         return modelList;
+    }
+
+    public static List<Sales> loadSales() {
+        List<Sales> salesList = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(new FileReader(SALES_FILE_PATH))) {
+            // Skip header
+            reader.readNext(); 
+            
+            String[] nextRecord;
+            while ((nextRecord = reader.readNext()) != null) {
+                if (nextRecord.length >= 11) {
+                    Sales sale = new Sales(
+                        nextRecord[0],  // SaleID
+                        nextRecord[1],  // EmployeeID
+                        nextRecord[2],  // OutletCode
+                        nextRecord[3],  // CustomerName
+                        nextRecord[4],  // Model
+                        Integer.parseInt(nextRecord[5]),  // Quantity
+                        Double.parseDouble(nextRecord[6]), // UnitPrice
+                        Double.parseDouble(nextRecord[7]), // Subtotal
+                        nextRecord[8],  // TransactionMethod
+                        nextRecord[9],  // Date
+                        nextRecord[10]  // Time
+                    );
+                    salesList.add(sale);
+                }
+            }
+            // System.out.println("Successfully loaded " + salesList.size() + " sales records.");
+        } catch (IOException | com.opencsv.exceptions.CsvValidationException e) {
+            System.err.println("Error loading sales data: " + e.getMessage());
+        }
+        return salesList;
     }
 }

@@ -3,6 +3,7 @@ package my.edu.wix1002.goldenhour.StorageSystem;
 import my.edu.wix1002.goldenhour.model.Employee;
 import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
+import my.edu.wix1002.goldenhour.model.Sales;
 
 import com.opencsv.CSVWriter;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class StoreManager {
 
     private static final String EMPLOYEE_FILE_PATH = "data/employee.csv";
+    private static final String SALES_FILE_PATH = "data/sales.csv";
+    private static final String AUDIT_FILE_PATH = "data/audit_log.csv";
 
     //SAVE EMPLOYEES
     public static void saveEmployees(List<Employee> employees) {
@@ -231,5 +234,34 @@ public class StoreManager {
             System.err.println("Error saving stock-out: " + e.getMessage());
         }
     }
+
+    //SAVES SALES
+    public static void saveSales(List<Sales> sales) {
+    try (CSVWriter writer = new CSVWriter(new FileWriter(SALES_FILE_PATH))) {
+
+        writer.writeNext(new String[]{"SaleID", "EmployeeID", "OutletCode", "CustomerName", "Model", "Quantity", "UnitPrice", "Subtotal", "PaymentMethod", "Date", "Time"});
+
+        //each sales record
+        for (Sales s : sales) {
+            writer.writeNext(new String[]{
+                s.getSaleID(),
+                s.getEmployeeID(),
+                s.getOutletCode(),
+                s.getCustomerName(), // Editable
+                s.getModel(),        // Editable
+                String.valueOf(s.getQuantity()), // Editable
+                String.valueOf(s.getUnitPrice()),
+                String.valueOf(s.getSubtotal()), // Editable
+                s.getTransactionMethod(),// Editable
+                s.getDate(),
+                s.getTime()
+            });
+        }
+        System.out.println("Sales data saved successfully!");
+
+    } catch (IOException ex) {
+        System.err.println("Error saving sales records: " + ex.getMessage());
+    }
+}
 }
 
