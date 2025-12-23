@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.2"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="my.edu.wix1002.goldenhour.ui.RegisterEmployeeController"
+      spacing="15" prefWidth="450" prefHeight="400">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <children>
+        <Label text="Register New Employee" style="-fx-font-size: 18px; -fx-font-weight:bold;"/>
+        
+        <GridPane hgap="10" vgap="12">
+            <children>
+                <Label text="Employee Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="nameField" GridPane.rowIndex="0" GridPane.columnIndex="1" prefWidth="250"/>
+                
+                <Label text="Employee ID:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="employeeIdField" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="250"/>
+                <Label fx:id="outletCodeHint" text="(Must start with outlet code)" 
+                       GridPane.rowIndex="1" GridPane.columnIndex="2" 
+                       style="-fx-text-fill: gray; -fx-font-size: 10px;"/>
+                
+                <Label text="Password:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <PasswordField fx:id="passwordField" GridPane.rowIndex="2" GridPane.columnIndex="1" prefWidth="250"/>
+                
+                <Label text="Role:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <HBox spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                    <RadioButton fx:id="fullTimeRadio" text="Full-time" selected="true">
+                        <toggleGroup>
+                            <ToggleGroup fx:id="roleGroup"/>
+                        </toggleGroup>
+                    </RadioButton>
+                    <RadioButton fx:id="partTimeRadio" text="Part-time" toggleGroup="$roleGroup"/>
+                </HBox>
+            </children>
+        </GridPane>
+        
+        <Label fx:id="messageLabel" wrapText="true" style="-fx-text-fill:red; -fx-font-size:12px;"/>
+        
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Register Employee" onAction="#onRegister" 
+                    style="-fx-background-color:#4CAF50; -fx-text-fill:white; -fx-font-weight:bold;" 
+                    prefWidth="150"/>
+            <Button text="Clear" onAction="#onClear" prefWidth="100"/>
+            <Button text="Close" onAction="#onClose" prefWidth="100"/>
+        </HBox>
+        
+        <VBox fx:id="successBox" spacing="8" alignment="CENTER" 
+              style="-fx-background-color:#E8F5E9; -fx-padding: 10; -fx-border-color:#4CAF50; -fx-border-width:2;" 
+              visible="false" managed="false">
+            <Label fx:id="successLabel" text="Employee successfully registered!" 
+                   style="-fx-text-fill:#2E7D32; -fx-font-weight:bold; -fx-font-size:14px;"/>
+        </VBox>
+    </children>
+</VBox>
