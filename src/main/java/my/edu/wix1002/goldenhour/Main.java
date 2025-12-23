@@ -182,14 +182,12 @@ public class Main {
         while (running) {
             System.out.println("\n=== Employee Menu ===");
             System.out.println("1. Log Attendance");
-            System.out.println("2. Morning Stock Count");
-            System.out.println("3. Stock In");
-            System.out.println("4. Stock Out");
-            System.out.println("5. Record New Sale");
-            System.out.println("6. Search Stock Information");
-            System.out.println("7. Edit Stock Information");
-            System.out.println("8. Edit Sales Information");
-            System.out.println("9. Exit");
+            System.out.println("2. Stock Management");
+            System.out.println("3. Record New Sale");
+            System.out.println("4. Search Stock Information");
+            System.out.println("5. Edit Stock Information");
+            System.out.println("6. Edit Sales Information");
+            System.out.println("7. Exit");
             System.out.print("Enter choice: ");
 
             String choice = input.nextLine();
@@ -198,33 +196,25 @@ public class Main {
                     AttendanceSystem.showAttendanceMenu(input, loggedInEmployee, allOutlets);
                     break;
                 case "2":
-                    System.out.println("Morning Stock Count - Coming soon!");
-                    running = false;
+                    StockManagement.setEmployeeName(loggedInEmployee.getName());
+                    StockManagement.main(new String[]{});
                     break;
                 case "3":
-                    StockManagement.setEmployeeName(loggedInEmployee.getName());
-                    StockManagement.main(new String[]{});  // launches the StockManagement flow
-                    break;
-                case "4":
-                    StockManagement.setEmployeeName(loggedInEmployee.getName());
-                    StockManagement.main(new String[]{});  // launches the StockManagement flow
-                    break;
-                case "5":
                     salesSystem.recordNewSale(input, loggedInEmployee, allModels);
                     break;
-                case "6":
+                case "4":
                     System.out.println("Search Stock Information - Coming soon!");
                     running = false;
                     break;
-                case "7":
+                case "5":
                     System.out.println("Edit Stock Information - Coming soon!");
                     running = false;
                     break;
-                case "8":
+                case "6":
                     System.out.println("Edit Sales Information - Coming soon!");
                     running = false;
                     break;
-                case "9":
+                case "7":
                     running = false;
                     System.out.println("Logging out...");
                     break;

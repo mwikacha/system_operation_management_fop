@@ -1,0 +1,24 @@
+Date: 2025-12-15
+Time: 08:51 PM
+Employee: C6012 - Khairul Ariffin bin Muhammad
+Customer Name: Khairul Ariffin bin Muhammad
+Item(s) Purchased:
+Enter Model: SW2500-1
+Enter Quantity: 1
+Unit Price: RM845
+Transaction Method: Credit Card
+Subtotal: RM845
+Transaction ID: 20251215T205109195-886
+-----------------------------------------------------
+Date: 2025-12-15
+Time: 09:03 PM
+Employee: C6008 - Li Xinyi
+Customer Name: Phaimon
+Item(s) Purchased:
+Enter Model: SW2500-1
+Enter Quantity: 1
+Unit Price: RM845
+Transaction Method: Debit Card
+Subtotal: RM845
+Transaction ID: 20251215T210323297-851
+-----------------------------------------------------
