@@ -2,6 +2,8 @@ package my.edu.wix1002.goldenhour.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -17,11 +19,37 @@ public class DashboardController {
     @FXML private Label welcomeLabel;
     @FXML private Label statusLabel;
 
+    // Employee buttons and container
+    @FXML private HBox employeeButtonsBox;
+    @FXML private Button clockInBtn;
+    @FXML private Button clockOutBtn;
+    @FXML private Button viewStockBtn;
+    @FXML private Button recordSaleBtn;
+    @FXML private Button logoutBtn;
+
+    // Manager buttons and container
+    @FXML private VBox managerButtonsBox;
+    @FXML private Button registerEmployeeBtn;
+    @FXML private Button exitBtn;
+
     private Employee loggedIn;
 
     public void initSession(Employee e) {
         this.loggedIn = e;
         welcomeLabel.setText("Welcome, " + e.getName() + " (" + e.getEmployeeID().substring(0, 3) + ")");
+
+        if (e.isManager()) {
+            employeeButtonsBox.setVisible(false);
+            employeeButtonsBox.setManaged(false);
+            managerButtonsBox.setVisible(true);
+            managerButtonsBox.setManaged(true);
+        } else {
+            //shows e,ployee buttons only
+            managerButtonsBox.setVisible(false);
+            managerButtonsBox.setManaged(false);
+            employeeButtonsBox.setVisible(true);
+            employeeButtonsBox.setManaged(true);
+        }
     }
 
     @FXML
@@ -104,5 +132,32 @@ public class DashboardController {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @FXML
+    private void onRegisterEmployee() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/RegisterEmployee.fxml"));
+            Scene scene = new Scene(loader.load());
+
+            RegisterEmployeeController controller = loader.getController();
+            controller.initSession(loggedIn);
+
+            Stage stage = new Stage();
+            stage.setTitle("Register New Employee");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception ex) {
+            statusLabel.setStyle("-fx-text-fill: red;");
+            statusLabel.setText("Failed to open registration: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    @FXML 
+    private void onExit() {
+        Stage stage = (Stage) welcomeLabel.getScene().getWindow();
+        stage.close();
+        System.out.println("Thank you for using the Store Operation Management System!");
     }
 }
