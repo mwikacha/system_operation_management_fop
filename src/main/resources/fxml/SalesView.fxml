@@ -14,6 +14,7 @@
     </padding>
 
     <children>
+        <!-- Sales entry form -->
         <Label text="Customer Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="customerField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
         
@@ -31,5 +32,42 @@
         
         <Button text="Add &amp; Save" onAction="#onSave" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
         <Label fx:id="statusLabel" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.columnSpan="2"/>
+
+        <!-- Separator -->
+        <Separator GridPane.rowIndex="7" GridPane.columnIndex="0" GridPane.columnSpan="2" />
+
+        <!-- Sales history title -->
+        <Label text="Sales History" style="-fx-font-weight: bold; -fx-font-size: 14;" GridPane.rowIndex="8" GridPane.columnIndex="0" GridPane.columnSpan="2"/>
+
+        <!-- Filters -->
+        <Label text="From:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="startDatePicker" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+
+        <Label text="To:" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="endDatePicker" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+
+        <Label text="Sort By:" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="sortCombo" GridPane.rowIndex="11" GridPane.columnIndex="1" prefWidth="200"/>
+
+        <Button text="Apply Filter / Sort" fx:id="filterBtn" onAction="#onApplyFilter" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
+        <Button text="Clear" fx:id="clearBtn" onAction="#onClearFilter" GridPane.rowIndex="12" GridPane.columnIndex="0"/>
+
+        <!-- Table view for history -->
+        <TableView fx:id="historyTable" GridPane.rowIndex="13" GridPane.columnIndex="0" GridPane.columnSpan="2" prefHeight="250">
+            <columns>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="100" />
+                <TableColumn fx:id="colTime" text="Time" prefWidth="80" />
+                <TableColumn fx:id="colSaleId" text="Sale ID" prefWidth="120" />
+                <TableColumn fx:id="colCustomer" text="Customer" prefWidth="140" />
+                <TableColumn fx:id="colModel" text="Model" prefWidth="100" />
+                <TableColumn fx:id="colQty" text="Qty" prefWidth="50" />
+                <TableColumn fx:id="colUnitPrice" text="Unit Price" prefWidth="80" />
+                <TableColumn fx:id="colSubtotal" text="Subtotal (RM)" prefWidth="100" />
+            </columns>
+        </TableView>
+
+        <!-- Total display -->
+        <Label text="Total:" GridPane.rowIndex="14" GridPane.columnIndex="0"/>
+        <Label fx:id="totalLabel" text="RM0.00" GridPane.rowIndex="14" GridPane.columnIndex="1"/>
     </children>
 </GridPane>
