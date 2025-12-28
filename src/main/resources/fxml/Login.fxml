@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.2"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="my.edu.wix1002.goldenhour.ui.LoginController"
+            prefWidth="400" prefHeight="220">
+    <children>
+        <Label layoutX="24" layoutY="16" text="Employee Login" style="-fx-font-size:16px;"/>
+        <Label layoutX="24" layoutY="60" text="Employee ID:"/>
+        <TextField fx:id="employeeIdField" layoutX="120" layoutY="56" prefWidth="240"/>
+        <Label layoutX="24" layoutY="100" text="Password:"/>
+        <PasswordField fx:id="passwordField" layoutX="120" layoutY="96" prefWidth="240"/>
+        <Button layoutX="120" layoutY="150" text="Login" onAction="#onLogin"/>
+        <Button layoutX="220" layoutY="150" text="Exit" onAction="#onExit"/>
+        <Label fx:id="messageLabel" layoutX="24" layoutY="180" style="-fx-text-fill:red;"/>
+    </children>
+</AnchorPane>

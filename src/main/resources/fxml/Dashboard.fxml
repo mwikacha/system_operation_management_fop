@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<VBox xmlns="http://javafx.com/javafx/11.0.2"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="my.edu.wix1002.goldenhour.ui.DashboardController" spacing="10" alignment="CENTER" prefWidth="600" prefHeight="400">
+    <children>
+        <Label fx:id="welcomeLabel" style="-fx-font-size:16px;"/>
+
+        <HBox fx:id="employeeButtonsBox" spacing="10">
+            <Button fx:id="clockInBtn" text="Clock In" onAction="#onClockIn"/>
+            <Button fx:id="clockOutBtn" text="Clock Out" onAction="#onClockOut"/>
+            <Button fx:id="viewStockBtn" text="View Stock" onAction="#onViewStock"/>
+            <Button fx:id="recordSaleBtn" text="Record Sale" onAction="#onRecordSale"/>
+            <Button fx:id="logoutBtn" text="Logout" onAction="#onLogout"/>
+        </HBox>
+
+        <VBox fx:id="managerButtonsBox" spacing="10" alignment="CENTER">
+            <Button fx:id="registerEmployeeBtn" text="Register New Employee" onAction="#onRegisterEmployee" prefWidth="200"/>
+            <Button fx:id="exitBtn" text="Exit" onAction="#onExit" prefWidth="200"/>
+        </VBox>
+        <Label fx:id="statusLabel" style="-fx-text-fill:green;"/>
+    </children>
+</VBox>

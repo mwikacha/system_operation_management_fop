@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<GridPane xmlns="http://javafx.com/javafx/21"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="my.edu.wix1002.goldenhour.ui.SalesController"
+          hgap="8" vgap="8">
+    
+    <!-- FIX: Use <padding> tag for Insets -->
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+    <children>
+        <!-- Sales entry form -->
+        <Label text="Customer Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="customerField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        
+        <Label text="Model:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="modelCombo" GridPane.rowIndex="1" GridPane.columnIndex="1" prefWidth="200"/>
+        
+        <Label text="Unit Price:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="unitPriceLabel" text="RM0.00" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        
+        <Label text="Quantity:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="qtyField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        
+        <Label text="Payment Method:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="payMethodField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        
+        <Button text="Add &amp; Save" onAction="#onSave" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label fx:id="statusLabel" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.columnSpan="2"/>
+
+        <!-- Separator -->
+
+    </children>
+</GridPane>

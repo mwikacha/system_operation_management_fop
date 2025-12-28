@@ -1,0 +1,25 @@
+
+=== Stock In ===
+Date: 2025-12-19
+Time: 1:04 a.m.
+Employee in Charge: ARISHA
+From: HQ (Service Center)
+To: C60 (Kuala Lumpur City Centre)
+Models received:
+- DW2400-2 (Quantity: 5)
+Total Quantity: 5
+Model quantities updated successfully.
+
+
+=== Stock Out ===
+Date: 2025-12-19
+Time: 1:04 a.m.
+Employee in Charge: ARISHA
+From: C67 (Pavillion Kuala Lumpur)
+To: C68 (1 Utama)
+Models transferred out:
+- SW2500-3 (Quantity: 3)
+- SW2500-2 (Quantity: 2)
+Total Quantity: 5
+Model quantities updated successfully.
+

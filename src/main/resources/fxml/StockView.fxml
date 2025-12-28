@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<VBox xmlns="http://javafx.com/javafx/11.0.2"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="my.edu.wix1002.goldenhour.ui.StockController" spacing="8" prefWidth="700" prefHeight="400">
+    <children>
+        <Label text="Current Inventory (read-only)"/>
+        <TableView fx:id="table" prefHeight="360" prefWidth="680">
+            <columns>
+                <TableColumn fx:id="colModel" text="Model" prefWidth="180"/>
+                <TableColumn fx:id="colPrice" text="Price" prefWidth="80"/>
+                <TableColumn fx:id="colStock" text="Stock (outlet)" prefWidth="420"/>
+            </columns>
+        </TableView>
+    </children>
+</VBox>
