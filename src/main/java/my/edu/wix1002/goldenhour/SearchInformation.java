@@ -10,46 +10,87 @@ To verify the authenticity of transactions, employees can search sales
 records by date, customer name, or model name.
  */
 
-// SearchInformation.java
+// input & output
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+// used to reprensent time
 import java.text.SimpleDateFormat;
 import java.util.Date;
+// used to insert inputs
 import java.util.Scanner;
 
-public class SearchInformation {
 
-    // for users to enter value
-    static Scanner scanner = new Scanner(System.in); 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    
-    // Inner classes to match your existing structure
-    static class Model {
+class Model 
+{
+        // basic attributes
         String modelCode;
         int price;
-        String[] recordedOutlet;
+
+        static String[] recordedOutlet;
         int[] plannedStock;
         
-        Model(int outletCount) {
-            plannedStock = new int[outletCount];
-        }
-    }
-    
-    // title of outlet.csv
-    static class Outlet {
+        // for one outlet recorded in model.csv, what is the recorded number of the model in each outlet
+        
+}
+
+
+class Outlet 
+{
         String outletCode;
         String outletName;
-    }
+}
+
     
-    // read outlet.csv and return number of outlets recorded in the file
-    public static int countOutlets() {
+public class SearchInformation {
+
+    //for this class
+    private static Scanner scanner = new Scanner(System.in); 
+
+    // automately shows this form of time: Y/M/D
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    
+
+    //###############################################################################################################//
+
+    // To count recorded outlets from model.csv
+    private static int countModelOutlets(){
+
+        int totalLines = 0;
+
+            try 
+            {
+                BufferedReader inputStream = new BufferedReader (new FileReader("data/model.csv"));
+                String line = inputStream.readLine();
+                String[] title = line.split(",");
+                totalLines = title.length -2;
+                Model.recordedOutlet = new String[totalLines];
+                for (int i = 2; i < title.length; i++)
+                {
+                    Model.recordedOutlet[i-2] = title[i];
+                }
+                inputStream.close();
+            }
+            catch (FileNotFoundException e) 
+            {
+            System.out.println("The file \"model.csv\" was not found");   
+            } 
+            catch (IOException e) 
+            {
+            System.out.println("Error reading from file");
+            }
+        return totalLines;    
+    }
+        
+    // To count recorded outlets from outlet.csv
+    private static int countOutlets() 
+    {
         int totalLines = 0;
         try 
         {
-            BufferedReader inputStream = new BufferedReader(new FileReader("outlet.csv"));
+            BufferedReader inputStream = new BufferedReader(new FileReader("data/outlet.csv"));
             String line;
             // skip the title line
             boolean firstLine = true;
@@ -74,33 +115,45 @@ public class SearchInformation {
         return totalLines;
     }
     
-    // Method to count model outlets from model.csv
-    public static int countModelOutlets() {
+    // Method to count total models
+    private static int countModels() {
         int totalLines = 0;
-        try 
-        {
-            BufferedReader inputStream = new BufferedReader(new FileReader("model.csv"));
-            String line = inputStream.readLine();
-            if (line != null) {
-                String[] title = line.split(",");
-                totalLines = title.length - 2;
+        try {
+            BufferedReader inputStream = new BufferedReader(new FileReader("data/model.csv"));
+            String line;
+            boolean firstLine = true;
+            while ((line = inputStream.readLine()) != null) {
+                if (firstLine) {
+                    firstLine = false;
+                    continue;
+                }
+                totalLines++;
             }
             inputStream.close();
-        } catch (FileNotFoundException e) {
+        } 
+        catch (FileNotFoundException e) 
+        {
             System.out.println("The file \"model.csv\" was not found");
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             System.out.println("Error reading from file");
         }
         return totalLines;
     }
     
+
+    //###############################################################################################################//
+
+    
     // Method to read outlet data
-    private static Outlet[] readOutlets() {
+    private static Outlet[] readOutlets() 
+    {
         int totalLines = countOutlets();
         Outlet[] outlets = new Outlet[totalLines];
         
         try {
-            BufferedReader inputStream = new BufferedReader(new FileReader("outlet.csv"));
+            BufferedReader inputStream = new BufferedReader(new FileReader("data/outlet.csv"));
             String line;
             boolean firstLine = true;
             int index = 0;
@@ -119,9 +172,13 @@ public class SearchInformation {
                 index++;
             }
             inputStream.close();
-        } catch (FileNotFoundException e) {
+        } 
+        catch (FileNotFoundException e) 
+        {
             System.out.println("The file \"outlet.csv\" was not found");
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             System.out.println("Error reading from file");
         }
         
@@ -132,115 +189,76 @@ public class SearchInformation {
     private static Model[] readModels() {
         int outletCount = countModelOutlets();
         int modelCount = countModels();
+        
+        // to record the models
         Model[] models = new Model[modelCount];
         
         try {
-            BufferedReader inputStream = new BufferedReader(new FileReader("model.csv"));
+            BufferedReader inputStream = new BufferedReader(new FileReader("data/model.csv"));
             String line;
             boolean firstLine = true;
             int index = 0;
             
             // Read outlet names from first line
-            String[] outletNames = null;
-            if (firstLine) {
+            String[] outletNames = new String[outletCount];
+            if (firstLine) 
+            {
+                // this is the title line
                 line = inputStream.readLine();
                 String[] title = line.split(",");
-                outletNames = new String[outletCount];
+                // information 1 : recorded outlets in model.csv
                 for (int i = 2; i < title.length; i++) {
                     outletNames[i-2] = title[i];
                 }
                 firstLine = false;
             }
             
+            
             // Read model data
-            while ((line = inputStream.readLine()) != null) {
+            // Go through the model.csv (without title line)
+            // Each line matches a model
+            // Each model has its basic attributes listed in class Model
+            // recorded all the models listed in the model.csv in Model[] models and return it
+
+            while ((line = inputStream.readLine()) != null) 
+            {
                 String[] values = line.split(",");
-                Model model = new Model(outletCount);
+                Model model = new Model();
+                model.plannedStock = new int[outletCount];
+
                 model.modelCode = values[0];
+                // A very useful method to change String to int
                 model.price = Integer.parseInt(values[1]);
                 model.recordedOutlet = outletNames;
                 
                 for (int i = 0; i < outletCount; i++) {
                     model.plannedStock[i] = Integer.parseInt(values[i + 2]);
                 }
-                
+
+                // record the model
                 models[index] = model;
                 index++;
             }
             inputStream.close();
-        } catch (FileNotFoundException e) {
+
+        } 
+        catch (FileNotFoundException e) 
+        {
             System.out.println("The file \"model.csv\" was not found");
-        } catch (IOException e) {
+        } 
+        catch (IOException e) 
+        {
             System.out.println("Error reading from file");
         }
         
         return models;
     }
-    
-    // Method to count total models
-    private static int countModels() {
-        int totalLines = 0;
-        try {
-            BufferedReader inputStream = new BufferedReader(new FileReader("model.csv"));
-            String line;
-            boolean firstLine = true;
-            while ((line = inputStream.readLine()) != null) {
-                if (firstLine) {
-                    firstLine = false;
-                    continue;
-                }
-                totalLines++;
-            }
-            inputStream.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("The file \"model.csv\" was not found");
-        } catch (IOException e) {
-            System.out.println("Error reading from file");
-        }
-        return totalLines;
-    }
-    
-    // 1. Stock Information Search
-    public static void searchStockInformation() {
-        System.out.println("\n=== Search Stock Information ===");
-        System.out.print("Enter Model Name: ");
-        String searchTerm = scanner.nextLine().trim();
-        
-        Model[] models = readModels();
-        Outlet[] outlets = readOutlets();
-        
-        System.out.println("\nSearching:");
-        System.out.println("===================");
-        
-        boolean found = false;
-        for (Model model : models) {
-            if (model.modelCode.equalsIgnoreCase(searchTerm)) {
-                found = true;
-                System.out.println("\nModel: " + model.modelCode);
-                System.out.println("Unit Price: RM" + model.price);
-                System.out.println("Stock by outlets:");
-                
-                // here, compare to the sample outputs, I split them into different lines, and add the outlet codes
-                for (int i = 0; i < model.recordedOutlet.length; i++) {
-                    String outletCode = model.recordedOutlet[i];
-                    String outletName = getOutletName(outlets, outletCode);
-                    System.out.println("  " + outletCode + " (" + outletName + "): " + model.plannedStock[i]);
-                }
-                
-                // If specific search, break after finding
-                if (!searchTerm.isEmpty()) {
-                    break;
-                }
-            }
-        }
-        
-        if (!searchTerm.isEmpty() && !found) {
-            System.out.println("Model \"" + searchTerm + "\" not found.");
-        }
-    }
-    
-    // Helper method to get outlet name from code
-    private static String getOutletName(Outlet[] outlets, String outletCode) {
+ 
+    //###############################################################################################################//
+
+    // We need to connect the outletcode to its name when we search and print the information 
+    private static String getOutletName(Outlet[] outlets, String outletCode) 
+    {
         for (Outlet outlet : outlets) {
             if (outlet.outletCode.equals(outletCode)) {
                 return outlet.outletName;
@@ -248,8 +266,80 @@ public class SearchInformation {
         }
         return "Unknown Outlet";
     }
+
+    //###############################################################################################################//
+   
+  
+    // 1. Stock Information Search (method 1)
+    public static void searchStockInformation() {
+        System.out.println("\n=== Search Stock Information ===");
+        System.out.print("Enter Model Name: ");
+
+        // user give an input model name
+        // trim() to reduce the unexpected spaces/symbols
+        String searchTerm = scanner.nextLine().trim();
+        
+        // read model.csv
+        Model[] models = readModels();
+        Outlet[] outlets = readOutlets();
+        
+        System.out.println("\nSearching:");
+        System.out.println();
+        
+        boolean found = false;
+
+        for (Model model : models) {
+            if (model.modelCode.equalsIgnoreCase(searchTerm)) 
+                {
+                found = true;
+                System.out.println("\nModel: " + model.modelCode);
+                System.out.println("Unit Price: RM" + model.price);
+                System.out.println("Stock by outlets:");
+                
+                // here, compare to the sample outputs, I think it's better to
+                // ① split them into different lines, 
+                // ② and add the outlet codes
+                // Also, I think there is no need to remove the outlets with 0 stock count(if it is then it doesn't matter)
+
+                //Go through all the recorded outlets matched with the searched model
+                for (int i = 0; i < model.recordedOutlet.length; i++) 
+                {
+                    String outletCode = model.recordedOutlet[i];
+                    String outletName = getOutletName(outlets, outletCode);
+                    System.out.println("  " + outletCode + " (" + outletName + "): " + model.plannedStock[i]);
+                }
+                
+            }
+        }
+        
+        // If this model is not in the list
+        if (!searchTerm.isEmpty() && !found) 
+        {
+            System.out.println("Model \"" + searchTerm + "\" not found.");
+        }
+    }
     
-    // 2. Sales Information Search
+    //###############################################################################################################//
+
+    // C6002 - Adam bin Abu → Adam bin Abu
+    private static String employeeName(String employeeInfo) 
+    {
+        if (employeeInfo == null) 
+        {
+            return "";
+        }
+        
+        int index = employeeInfo.indexOf(" - ");
+        //if " - " is found
+        if (index != -1) 
+        {
+            return employeeInfo.substring(index + 3);
+        }
+        //if the name is pure already
+        return employeeInfo;
+    }
+
+    // 2. Sales Information Search (method 2 - employee)
     public static void searchSalesInformation() {
         System.out.println("\n=== Search Sales Information ===");
         System.out.print("Search keyword: ");
@@ -260,137 +350,186 @@ public class SearchInformation {
         searchInSalesFiles(keyword);
     }
     
-    // Method to search in sales text files (从 data/sales 目录)
+    // search in sales text files
     private static void searchInSalesFiles(String searchTerm) {
         System.out.println("\n=== Search Sales Information ===");
         System.out.println("Search keyword: " + searchTerm);
         System.out.println("Searching...");
+        System.out.println();
+
+        // ! To read the txt in the sales block, first set sales as a file
+        File salesInfo = new File("data/sales");
         
-        File salesDir = new File("data/sales");
-        if (!salesDir.exists() || !salesDir.isDirectory()) {
-            System.out.println("Sales directory not found: data/sales");
-            return;
-        }
+        // get all the txts
+        File[] salesFiles = null;
+
+        // Interesting method :o
+        // listFiles (FilenameFilter)
+        // FilenameFilter: (d,f) -> (condition)
+        // means from the d, what f fullfill the condtions is/are returned
+        salesFiles = salesInfo.listFiles((directory,filename) -> 
+        filename.toLowerCase().endsWith(".txt") && filename.startsWith("sales_"));
+
+        //startsWith and endsWith are also useful
         
-        // 获取所有销售文件
-        File[] salesFiles = salesDir.listFiles((dir, name) -> 
-            name.toLowerCase().endsWith(".txt") && name.startsWith("sales_"));
-        
-        if (salesFiles == null || salesFiles.length == 0) {
+        if (salesFiles == null || salesFiles.length == 0) 
+        {
             System.out.println("No sales files found in data/sales directory.");
             return;
         }
         
         boolean found = false;
         
-        // 搜索每个文件
+        // Go through the selected files:
+
         for (File salesFile : salesFiles) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(salesFile))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(salesFile))) 
+            {
                 String line;
                 
-                // 存储一条记录的数据
-                String date = null, time = null, employee = null, customer = null;
-                String item = null, quantity = null, unitPrice = null, method = null;
-                String subtotal = null, transactionId = null;
+                // set all the detailed information as default
+                String date = null, time = null, employee = null, customer = null,
+                item = null, quantity = null, unitPrice = null, method = null,
+                subtotal = null, transactionId = null;
                 
-                boolean recordStarted = false;
-                boolean recordMatches = false;
-                boolean inItemsSection = false;
+                boolean recordStarted = false, recordMatches = false,inItemsSection = false;
                 
+
                 while ((line = reader.readLine()) != null) {
+                    // form it first
                     line = line.trim();
                     
-                    if (line.isEmpty()) continue;
+                    if (line.isEmpty()) 
+                    {
+                        continue;
+                    }
                     
-                    // 解析销售记录
-                    if (line.startsWith("Date:")) {
+                    // can searched by date, customer, and item
+
+                    //date *
+
+                    if (line.startsWith("Date:")) 
+                    {
+                        //from index 5 to the end is the date
                         date = line.substring(5).trim();
                         recordStarted = true;
-                        if (searchTerm.matches("\\d{4}-\\d{2}-\\d{2}") && date.contains(searchTerm)) {
+                        //to determine whether the provided keyword is a data
+                        //new method - matches("a date form,we use yyyy-mm-dd");
+                        //new method - contains(...) check for substring
+                        if (searchTerm.matches("\\d{4}-\\d{2}-\\d{2}") && date.contains(searchTerm)) 
+                        {
                             recordMatches = true;
                         }
                     } 
-                    else if (line.startsWith("Time:")) {
+
+                    //time
+                    else if (line.startsWith("Time:")) 
+                    {
                         time = line.substring(5).trim();
                     } 
-                    else if (line.startsWith("Employee:")) {
+
+                    //employee
+                    else if (line.startsWith("Employee:")) 
+                    {
                         employee = line.substring(9).trim();
                     } 
-                    else if (line.startsWith("Customer Name:")) {
+
+                    //customer*
+                    else if (line.startsWith("Customer Name:")) 
+                    {
                         customer = line.substring(14).trim();
+
+                        //to determine whether the provided keyword is a customer's name
                         if (customer.toLowerCase().contains(searchTerm.toLowerCase())) {
                             recordMatches = true;
                         }
                     } 
-                    else if (line.equals("Item(s) Purchased:")) {
+
+                    //items*
+                    else if (line.equals("Item(s) Purchased:")) 
+                    {
                         inItemsSection = true;
                     }
+                    //to determine whether the provided keyword is a model's name
                     else if (inItemsSection && line.startsWith("Enter Model:")) {
                         item = line.substring(12).trim();
                         if (item.contains(searchTerm)) {
                             recordMatches = true;
                         }
                     }
+
+                    //quantity
                     else if (inItemsSection && line.startsWith("Enter Quantity:")) {
                         quantity = line.substring(15).trim();
                     }
+
+                    // unit price
                     else if (inItemsSection && line.startsWith("Unit Price:")) {
                         unitPrice = line.substring(11).trim();
                     }
+                    
+                    //pay method 
                     else if (line.startsWith("Transaction Method:")) {
                         method = line.substring(19).trim();
                         inItemsSection = false;
                     }
+
+                    //subtotal
                     else if (line.startsWith("Subtotal:")) {
                         subtotal = line.substring(9).trim();
                     }
+
+                    // pay ID
                     else if (line.startsWith("Transaction ID:")) {
                         transactionId = line.substring(15).trim();
                     }
-                    else if (line.startsWith("-----------------------------------------------------")) {
-                        // 一条记录结束
-                        if (recordStarted && recordMatches) {
+
+                    // end(one sale recording list)
+                    else if (line.startsWith("-----------------------------------------------------")) 
+                    {
+                        // The model is found!
+                        // matches the sample output
+                        if (recordStarted && recordMatches) 
+                        {
                             System.out.println("Sales Record Found:");
-                            System.out.println("Date: " + date + " Time: " + convertTimeFormat(time));
+                            System.out.println("Date: " + date + " Time: " + time);
                             System.out.println("Customer: " + customer);
                             System.out.println("Item(s): " + item + " Quantity: " + quantity);
                             System.out.println("Total: " + subtotal);
                             System.out.println("Transaction Method: " + method);
-                            System.out.println("Employee: " + extractEmployeeName(employee));
+                            System.out.println("Employee: " + employeeName(employee));
                             System.out.println("Status: Transaction verified.");
                             System.out.println();
                             found = true;
                         }
                         
-                        // 重置变量
-                        date = time = employee = customer = item = quantity = unitPrice = null;
+                        // set the information as default again
+                        date = time = employee = customer = item = quantity = unitPrice = 
                         method = subtotal = transactionId = null;
-                        recordStarted = false;
-                        recordMatches = false;
-                        inItemsSection = false;
+
+                        recordStarted = recordMatches = inItemsSection = false;
                     }
                     
-                    // 全文搜索
-                    if (!recordMatches && line.contains(searchTerm)) {
-                        recordMatches = true;
-                    }
                 }
                 
-                // 处理文件末尾的最后一条记录
-                if (recordStarted && recordMatches) {
+                // final recording piece(without ---)
+                if (recordStarted && recordMatches) 
+                {
                     System.out.println("Sales Record Found:");
-                    System.out.println("Date: " + date + " Time: " + convertTimeFormat(time));
+                    System.out.println("Date: " + date + " Time: " + time);
                     System.out.println("Customer: " + customer);
                     System.out.println("Item(s): " + item + " Quantity: " + quantity);
                     System.out.println("Total: " + subtotal);
                     System.out.println("Transaction Method: " + method);
-                    System.out.println("Employee: " + extractEmployeeName(employee));
+                    System.out.println("Employee: " + employeeName(employee));
                     System.out.println("Status: Transaction verified.");
                     System.out.println();
                     found = true;
                 }
                 
-            } catch (IOException e) {
+            } 
+            catch (IOException e) 
+            {
                 System.out.println("Error reading file: " + salesFile.getName());
             }
         }
@@ -400,38 +539,8 @@ public class SearchInformation {
         }
     }
    
-    // 时间格式转换：10:13 AM → 10:13 a.m.
-    private static String convertTimeFormat(String time) {
-        if (time == null) return "";
-        
-        // 如果已经是 a.m./p.m. 格式，直接返回
-        if (time.contains("a.m.") || time.contains("p.m.")) {
-            return time;
-        }
-        
-        // 转换 AM/PM 为 a.m./p.m.
-        if (time.toUpperCase().endsWith(" AM")) {
-            return time.substring(0, time.length() - 3) + " a.m.";
-        } else if (time.toUpperCase().endsWith(" PM")) {
-            return time.substring(0, time.length() - 3) + " p.m.";
-        }
-        
-        return time;
-    }
 
-    // 提取员工姓名：C6002 - Adam bin Abu → Adam bin Abu
-    private static String extractEmployeeName(String employeeStr) {
-        if (employeeStr == null) return "";
-        
-        int dashIndex = employeeStr.indexOf(" - ");
-        if (dashIndex != -1) {
-            return employeeStr.substring(dashIndex + 3);
-        }
-        
-        return employeeStr;
-    }
-    
-    // Main menu for SearchInformation
+    // start from here
     public static void main(String[] args) {
         System.out.println("=== Search Information System ===");
         
@@ -454,12 +563,14 @@ public class SearchInformation {
                         searchSalesInformation();
                         break;
                     case 3:
-                        System.out.println("Exiting Search Information System. Goodbye!");
+                        System.out.println("Exiting Search Information System :)");
                         return;
                     default:
                         System.out.println("Invalid choice. Please enter 1, 2, or 3.");
                 }
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 System.out.println("Invalid input. Please enter a number.");
                 scanner.nextLine();
             }
