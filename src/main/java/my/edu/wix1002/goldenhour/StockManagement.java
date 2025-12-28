@@ -418,7 +418,8 @@ public class StockManagement {
         
     }
     
-    private static int[] selectPurpose(){
+    private static int[] selectPurpose() 
+    {
         String purposes = "";
         System.out.println("Select what purpose(s) you want to accomplish:" );
         System.out.println("Enter 1 for stock Count; \nEnter 2 for Stock In \nEnter 3 for stock Out; \nEnter 0 for finish");
@@ -429,24 +430,29 @@ public class StockManagement {
                 int p = allScanner.nextInt();
                 allScanner.nextLine(); 
                 
-                if (p == 1 || p == 2 || p==3) {
-                    purposes += p;
-                } 
-                else if(p == 0){
+                if (p == 0) {
                     break;
                 }
+                else if (p == 1 || p == 2 || p == 3) {
+                    if (!purposes.contains(String.valueOf(p))) {
+                        purposes += p;
+                        System.out.println("Task " + p + " added. Enter another task or 0 to finish.");
+                    } else {
+                        System.out.println("Task " + p + " already selected.");
+                    }
+                }
                 else {
-                    System.out.println("Please enter 1,2 or 3 to select task(s) you want to do; enter 0 to finish selection.");
+                    System.out.println("Please enter 1, 2, 3 to select task(s) you want to do; enter 0 to finish selection.");
                 }
             } 
             catch (InputMismatchException e) {
                 System.out.println("Please Enter an integer.");
-                allScanner.next(); 
+                allScanner.next();
             }
         }
 
         int[] tasks = new int[purposes.length()];
-        for(int i = 0; i < tasks.length; i++){
+        for (int i = 0; i < tasks.length; i++) {
             tasks[i] = purposes.charAt(i) - '0';
         }
 
@@ -530,73 +536,66 @@ public class StockManagement {
 
     // stock in
 
-    private static String[] information1(String[]f_t){
+    private static String[] information1(String[] f_t) 
+    {
         System.out.println("\nWhere are the new models are received from? \nEnter 1 for HQ(Service Center) \nEnter 2 for other outlets");
 
         Outlet[] outlets = createCSVOutlet();
         outletsRead(outlets);
 
-        //from
-        /////////////////////////////////////////////////////////////////////////////////////////
-         try {
-            int from = allScanner.nextInt();
-            allScanner.nextLine(); 
-            if (from == 1) {
-                f_t[0] = "From: HQ (Service Center)";
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                int from = allScanner.nextInt();
+                allScanner.nextLine(); 
+                if (from == 1) {
+                    f_t[0] = "From: HQ (Service Center)";
+                    validInput = true;
+                } 
+                else if (from == 2) {
+                    String outlet = whichOutlet();
+                    String name = matchName(outlets, outlet);
+                    f_t[0] = "From: " + outlet + " (" + name + ")";
+                    validInput = true;
+                }
+                else {
+                    System.out.println("Please enter 1 or 2 to select outlet the model(s) from.");
+                }
             } 
-            else if(from ==2){
-                String outlet = whichOutlet();
-                String name = matchName(outlets, outlet);
-                f_t[0]= "From: " + outlet + " (" + name + ")";
+            catch (InputMismatchException e) {
+                System.out.println("Please Enter an integer (1 or 2).");
+                allScanner.next();
             }
-            else {
-                System.out.println("Please enter 1 or 2 to select outlet the model(s) from.");
-            }
-        } 
-        
-        catch (InputMismatchException e) {
-            System.out.println("Please Enter an integer.");
-            allScanner.next(); 
         }
 
-        //to
-        ///////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("Where are the models reveived by?");
         String outlet_ = whichOutlet();
         String name_ = matchName(outlets, outlet_);
         f_t[1] = "To: " + outlet_ + " (" + name_ + ")";
 
-        //models
-        /////////////////////////////////////////////////////////////////////////////////////////
         String models = "";
         System.out.println("What model(s) the store receives:(Press enter to stop) ");
-        while (true){
+        while (true) {
             String model = allScanner.nextLine();
-            if (model.equals(""))
-            {
+            if (model.equals("")) {
                 break;
             }
             ModelStock[] models_ = createCSVModels();
             modelsRead(models_);
             boolean valid = false;
-            for (int i = 0; i<models_.length;i++)
-            {
-                if (model.equals(models_[i].modelCode))
-                {
+            for (int i = 0; i < models_.length; i++) {
+                if (model.equals(models_[i].modelCode)) {
                     valid = true;
                     models += model + ",";
                     break;
                 }
             }
-            if (!valid)
-            {
+            if (!valid) {
                 System.out.println("Invalid model code, try again!");
             }
-            
         }
         String[] modelCode = models.split(",");
         return modelCode;
-        
     }
 
     private static int[] information2 (int[] quantity,String[] modelCode)
@@ -728,73 +727,66 @@ public class StockManagement {
 
     // stock out
 
-    private static String[] information1_out(String[]f_t){
+    private static String[] information1_out(String[] f_t) 
+    {
         System.out.println("\nWhere are the models transferred from? \nEnter 1 for HQ(Service Center) \nEnter 2 for other outlets");
 
         Outlet[] outlets = createCSVOutlet();
         outletsRead(outlets);
 
-        //from (source for stock out)
-        /////////////////////////////////////////////////////////////////////////////////////////
-         try {
-            int from = allScanner.nextInt();
-            allScanner.nextLine(); 
-            if (from == 1) {
-                f_t[0] = "From: HQ (Service Center)";
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                int from = allScanner.nextInt();
+                allScanner.nextLine(); 
+                if (from == 1) {
+                    f_t[0] = "From: HQ (Service Center)";
+                    validInput = true;
+                } 
+                else if (from == 2) {
+                    String outlet = whichOutlet();
+                    String name = matchName(outlets, outlet);
+                    f_t[0] = "From: " + outlet + " (" + name + ")";
+                    validInput = true;
+                }
+                else {
+                    System.out.println("Please enter 1 or 2 to select outlet the model(s) from.");
+                }
             } 
-            else if(from ==2){
-                String outlet = whichOutlet();
-                String name = matchName(outlets, outlet);
-                f_t[0]= "From: " + outlet + " (" + name + ")";
+            catch (InputMismatchException e) {
+                System.out.println("Please Enter an integer (1 or 2).");
+                allScanner.next();
             }
-            else {
-                System.out.println("Please enter 1 or 2 to select outlet the model(s) from.");
-            }
-        } 
-        
-        catch (InputMismatchException e) {
-            System.out.println("Please Enter an integer.");
-            allScanner.next(); 
         }
 
-        //to (destination for stock out) - ALWAYS an outlet
-        ///////////////////////////////////////////////////////////////////////////////////////////
         System.out.println("Where are the models transferred to?");
         String outlet_ = whichOutlet();
         String name_ = matchName(outlets, outlet_);
         f_t[1] = "To: " + outlet_ + " (" + name_ + ")";
 
-        //models
-        /////////////////////////////////////////////////////////////////////////////////////////
         String models = "";
         System.out.println("What model(s) the store transfers out:(Press enter to stop) ");
-        while (true){
+        while (true) {
             String model = allScanner.nextLine();
-            if (model.equals(""))
-            {
+            if (model.equals("")) {
                 break;
             }
             ModelStock[] models_ = createCSVModels();
             modelsRead(models_);
             boolean valid = false;
-            for (int i = 0; i<models_.length;i++)
-            {
-                if (model.equals(models_[i].modelCode))
-                {
+            for (int i = 0; i < models_.length; i++) {
+                if (model.equals(models_[i].modelCode)) {
                     valid = true;
                     models += model + ",";
                     break;
                 }
             }
-            if (!valid)
-            {
+            if (!valid) {
                 System.out.println("Invalid model code, try again!");
             }
-            
         }
         String[] modelCode = models.split(",");
         return modelCode;
-        
     }
 
     private static int[] information2_out (int[] quantity,String[] modelCode)
