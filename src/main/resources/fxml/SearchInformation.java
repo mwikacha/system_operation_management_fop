@@ -1,3 +1,4 @@
+package my.edu.wix1002.goldenhour;
 /*
 Search Information (1 mark)
 This feature allows employees to quickly retrieve information related to stocks and sales.
@@ -9,25 +10,15 @@ To verify the authenticity of transactions, employees can search sales
 records by date, customer name, or model name.
  */
 
-
-
 // SearchInformation.java
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-//time
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//inputs
 import java.util.Scanner;
-//read zip file?
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipEntry;
 
 public class SearchInformation {
 
@@ -260,40 +251,44 @@ public class SearchInformation {
     
     // 2. Sales Information Search
     public static void searchSalesInformation() {
-    System.out.println("\n=== Search Sales Information ===");
-    System.out.print("Search keyword: ");
-    
-    String keyword = scanner.nextLine().trim();
-    
-    // start to search
-    searchInZipFiles(keyword);
+        System.out.println("\n=== Search Sales Information ===");
+        System.out.print("Search keyword: ");
+        
+        String keyword = scanner.nextLine().trim();
+        
+        // start to search
+        searchInSalesFiles(keyword);
     }
     
-    // Method to search in ZIP files
-    private static void searchInZipFiles(String searchTerm) {
-    System.out.println("\n=== Search Sales Information ===");
-    System.out.println("Search keyword: " + searchTerm);
-    System.out.println("Searching...");
-    
-    try {
-        String zipFileName = "sales.zip";
+    // Method to search in sales text files (从 data/sales 目录)
+    private static void searchInSalesFiles(String searchTerm) {
+        System.out.println("\n=== Search Sales Information ===");
+        System.out.println("Search keyword: " + searchTerm);
+        System.out.println("Searching...");
         
-        // === 纯手动遍历：用ZipInputStream ===
-        FileInputStream fis = new FileInputStream(zipFileName);
-        ZipInputStream zis = new ZipInputStream(fis);
+        File salesDir = new File("data/sales");
+        if (!salesDir.exists() || !salesDir.isDirectory()) {
+            System.out.println("Sales directory not found: data/sales");
+            return;
+        }
+        
+        // 获取所有销售文件
+        File[] salesFiles = salesDir.listFiles((dir, name) -> 
+            name.toLowerCase().endsWith(".txt") && name.startsWith("sales_"));
+        
+        if (salesFiles == null || salesFiles.length == 0) {
+            System.out.println("No sales files found in data/sales directory.");
+            return;
+        }
         
         boolean found = false;
         
-        // 手动循环获取每个条目
-        ZipEntry entry;
-        while ((entry = zis.getNextEntry()) != null) {
-            // === 从这里开始，解析逻辑完全不变 ===
-            if (entry.getName().endsWith(".txt")) {
-                // 读取文件内容
-                BufferedReader reader = new BufferedReader(new InputStreamReader(zis));
-                
+        // 搜索每个文件
+        for (File salesFile : salesFiles) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(salesFile))) {
                 String line;
-                // 存储一条记录的数据 - 根据实际格式
+                
+                // 存储一条记录的数据
                 String date = null, time = null, employee = null, customer = null;
                 String item = null, quantity = null, unitPrice = null, method = null;
                 String subtotal = null, transactionId = null;
@@ -307,7 +302,7 @@ public class SearchInformation {
                     
                     if (line.isEmpty()) continue;
                     
-                    // === 根据实际格式解析（按你的格式）===
+                    // 解析销售记录
                     if (line.startsWith("Date:")) {
                         date = line.substring(5).trim();
                         recordStarted = true;
@@ -355,7 +350,6 @@ public class SearchInformation {
                     else if (line.startsWith("-----------------------------------------------------")) {
                         // 一条记录结束
                         if (recordStarted && recordMatches) {
-                            // === 输出实际数据 ===
                             System.out.println("Sales Record Found:");
                             System.out.println("Date: " + date + " Time: " + convertTimeFormat(time));
                             System.out.println("Customer: " + customer);
@@ -395,26 +389,17 @@ public class SearchInformation {
                     System.out.println();
                     found = true;
                 }
+                
+            } catch (IOException e) {
+                System.out.println("Error reading file: " + salesFile.getName());
             }
-            
-            zis.closeEntry();
         }
-        
-        zis.close();
-        fis.close();
         
         if (!found) {
             System.out.println("No sales records found for: " + searchTerm);
         }
-        
-    } 
-    catch (Exception e) 
-    {
-        System.out.println("Error: " + e.getMessage());
-    }
     }
    
-
     // 时间格式转换：10:13 AM → 10:13 a.m.
     private static String convertTimeFormat(String time) {
         if (time == null) return "";
