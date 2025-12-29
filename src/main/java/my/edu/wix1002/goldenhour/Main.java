@@ -184,7 +184,7 @@ public class Main {
             System.out.println("1. Log Attendance");
             System.out.println("2. Stock Management");
             System.out.println("3. Record New Sale");
-            System.out.println("4. Search Stock Information");
+            System.out.println("4. Search Stock/Sales Information");
             System.out.println("5. Edit Stock Information");
             System.out.println("6. Edit Sales Information");
             System.out.println("7. Exit");
@@ -193,27 +193,32 @@ public class Main {
             String choice = input.nextLine();
             switch (choice) {
                 case "1":
+                    // Log attendance
                     AttendanceSystem.showAttendanceMenu(input, loggedInEmployee, allOutlets);
                     break;
                 case "2":
+                    // Launch stock management
                     StockManagement.setEmployeeName(loggedInEmployee.getName());
                     StockManagement.setEmployeeID(loggedInEmployee.getEmployeeID());
                     StockManagement.main(new String[]{});
                     break;
                 case "3":
+                    // Record a new sale
                     salesSystem.recordNewSale(input, loggedInEmployee, allModels);
                     break;
                 case "4":
-                    System.out.println("Search Stock Information - Coming soon!");
-                    running = false;
+                    //Launch search stock/sales information
+                    SearchInformation.main(new String[]{});
                     break;
                 case "5":
-                    System.out.println("Edit Stock Information - Coming soon!");
-                    running = false;
+                    // Launch edit stock 
+                    EditInformation editorStock = new EditInformation(allModels, allOutlets);
+                    editorStock.editStockInformation();
                     break;
                 case "6":
-                    System.out.println("Edit Sales Information - Coming soon!");
-                    running = false;
+                    // Launch edit sales 
+                    EditInformation editorSales = new EditInformation(allModels, allOutlets);
+                    editorSales.editSalesInformation();
                     break;
                 case "7":
                     running = false;
