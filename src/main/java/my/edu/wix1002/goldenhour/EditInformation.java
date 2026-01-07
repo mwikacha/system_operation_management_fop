@@ -2,6 +2,7 @@ package my.edu.wix1002.goldenhour;
 
 import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
+import my.edu.wix1002.goldenhour.AutoEmail.AutoEmail;
 import my.edu.wix1002.goldenhour.StorageSystem.StoreManager;
 import my.edu.wix1002.goldenhour.model.Sales;
 import my.edu.wix1002.goldenhour.util.DataLoader;
@@ -153,7 +154,6 @@ public void editSalesInformation() {
             }
         }
         
-        
     
         private void handleSalesEditChoice(int choice, Sales targetSale) {
           
@@ -277,19 +277,9 @@ public void editSalesInformation() {
         try {
             // Overwrite sales.csv with the updated list
             my.edu.wix1002.goldenhour.StorageSystem.StoreManager.saveSales(allSales); 
+            AutoEmail.sendDailyReport(allSales.size());
         } catch (Exception e) {
             System.err.println("An error occurred during save: " + e.getMessage());
         }
     } 
-
-   public static void main(String[] args) {
-
-    List<Sales> mockSales = new java.util.ArrayList<>();
-    mockSales.add(new Sales("S001", "EMP001", "C60", "Alice", "DW3000-5", 2, 150.00, 300.00, "Cash", "2024-06-01", "10:00"));
-
-    EditInformation testEditor = new EditInformation(new java.util.ArrayList<>(), new java.util.ArrayList<>());
-    
-    System.out.println("--- STARTING TEST ---");
-    testEditor.editSalesInformation(); 
-}
 }

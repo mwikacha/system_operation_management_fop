@@ -1,6 +1,6 @@
-SaleID,EmployeeID,OutletCode,CustomerName,Model,Quantity,UnitPrice,Subtotal,PaymentMethod,Date,Time
-20251215T210323297-851,C6008,C60,Phaimon,SW2500-1,1,845,845,Debit Card,2025-12-15,09:03 PM
+"SaleID","EmployeeID","OutletCode","CustomerName","Model","Quantity","UnitPrice","Subtotal","PaymentMethod","Date","Time"
+"20251215T210323297-851","C6008","C60","Phaimon","SW2500-1","1","845.0","845.0","E-wallet","2025-12-15","09:03 PM"
 "TX1765995192466","C6005","C60","NiumaWorkUntil2AM","DW2300-3","1","349.0","349.0","Credit Card","2025-12-18","02:13:12.478931500"
-"TX1766054679691","C6005","C60","Zahid","SW2500-2","3","845.0","2535.0","Cash","2025-12-18","18:44:39.692772500"
-"TX1766670980087","C6002","C60","Adam Bin abu","DW2300-1","2","399.0","798.0","Card","2025-12-25","21:56:20.099497800"
+"TX1766054679691","C6005","C60","Zahid","SW2500-2","2","845.0","1690.0","Cash","2025-12-18","18:44:39.692772500"
+"TX1766670980087","C6002","C60","Adam Bin abu","DW2300-1","2","399.0","798.0","Credit Card","2025-12-25","21:56:20.099497800"
 "TX1766672762057","C6002","C60","Adam Bin Abu","DW2300-3","3","349.0","1047.0","Card","2025-12-25","22:26:02.059223600"

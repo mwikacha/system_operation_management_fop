@@ -5,6 +5,9 @@ import my.edu.wix1002.goldenhour.model.Model;
 import my.edu.wix1002.goldenhour.model.Outlet;
 import my.edu.wix1002.goldenhour.util.DataLoader;
 import my.edu.wix1002.goldenhour.StorageSystem.StoreManager;
+import my.edu.wix1002.goldenhour.EditInformation;
+import my.edu.wix1002.goldenhour.AutoEmail.AutoEmail;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -223,6 +226,8 @@ public class Main {
                 case "7":
                     running = false;
                     System.out.println("Logging out...");
+                    AutoEmail.sendDailyReport(5);
+
                     break;
                 default:
                     System.out.println("Invalid choice! Please try again.");
